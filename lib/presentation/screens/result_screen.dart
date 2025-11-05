@@ -17,11 +17,18 @@ class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final quizProvider = Provider.of<QuizProvider>(context);
+    final quizProvider = Provider.of<QuizProvider>(context, listen: false);
     final size = MediaQuery.of(context).size;
 
-    final scorePercentage =
-        (quizProvider.score / quizProvider.totalQuestions * 100).round();
+    // Capture values to prevent issues during navigation
+    final score = quizProvider.score;
+    final totalQuestions = quizProvider.totalQuestions;
+    final userName = quizProvider.userName;
+    final totalTime = quizProvider.totalTime;
+    
+    final scorePercentage = totalQuestions > 0
+        ? (score / totalQuestions * 100).round()
+        : 0;
 
     return WillPopScope(
       onWillPop: () async {
@@ -74,17 +81,31 @@ class ResultScreen extends StatelessWidget {
 
                 SizedBox(height: size.height * 0.01),
 
-                // User name
-                Text(
-                  'Great job, ${quizProvider.userName}!',
+                // User name - Enhanced display
+                RichText(
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: size.width * 0.045,
-                    fontWeight: FontWeight.w400,
-                    color: themeProvider.isDarkMode
-                        ? const Color(0xFFE8ECF5).withOpacity(0.7)
-                        : const Color(0xFF1A1B4B).withOpacity(0.7),
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: size.width * 0.045,
+                      fontWeight: FontWeight.w400,
+                      color: themeProvider.isDarkMode
+                          ? const Color(0xFFE8ECF5).withOpacity(0.7)
+                          : const Color(0xFF1A1B4B).withOpacity(0.7),
+                    ),
+                    children: [
+                      const TextSpan(text: 'Great job, '),
+                      TextSpan(
+                        text: userName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: themeProvider.isDarkMode
+                              ? const Color(0xFFFF7BA8)
+                              : const Color(0xFFFF6B9D),
+                        ),
+                      ),
+                      const TextSpan(text: '!'),
+                    ],
                   ),
                 ),
 
@@ -125,7 +146,7 @@ class ResultScreen extends StatelessWidget {
 
                       // Score number
                       Text(
-                        '${quizProvider.score}/${quizProvider.totalQuestions}',
+                        '$score/$totalQuestions',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: size.width * 0.15,
@@ -176,7 +197,7 @@ class ResultScreen extends StatelessWidget {
                           ),
                           SizedBox(width: size.width * 0.02),
                           Text(
-                            'Time: ${_formatTime(quizProvider.totalTime)}',
+                            'Time: ${_formatTime(totalTime)}',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: size.width * 0.045,
@@ -238,10 +259,11 @@ class ResultScreen extends StatelessWidget {
                   height: size.height * 0.06,
                   child: OutlinedButton(
                     onPressed: () {
-                      // Reset quiz and go back to home
+                      // Don't reset the user name, only reset quiz data
                       quizProvider.resetQuiz();
-                      Navigator.pushAndRemoveUntil(
-                        context,
+                      quizProvider.setUserName(userName);
+                      
+                      Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                           builder: (context) => const HomeScreen(),
                         ),

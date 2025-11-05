@@ -60,7 +60,7 @@ class InstructionScreen extends StatelessWidget {
                       context,
                       size,
                       themeProvider,
-                      '1. There are 2 quiz questions in one play.',
+                      '1. There are 5 quiz questions in one play.',
                     ),
                     SizedBox(height: size.height * 0.015),
                     _buildInstructionItem(
