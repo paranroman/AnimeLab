@@ -31,11 +31,8 @@ class ResultScreen extends StatelessWidget {
         ? (score / totalQuestions * 100).round()
         : 0;
 
-    return WillPopScope(
-      onWillPop: () async {
-        // Prevent back button, user must use provided buttons
-        return false;
-      },
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         backgroundColor: themeProvider.isDarkMode
             ? const Color(0xFF0F1020)
@@ -95,7 +92,7 @@ class ResultScreen extends StatelessWidget {
                   height: isLandscape ? size.height * 0.01 : size.height * 0.01,
                 ),
 
-                // User name - Enhanced display
+                // User name
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
@@ -313,7 +310,7 @@ class ResultScreen extends StatelessWidget {
                   height: isLandscape ? size.height * 0.08 : size.height * 0.06,
                   child: OutlinedButton(
                     onPressed: () {
-                      // Don't reset the user name, only reset quiz data
+                      // not reset the user name, only reset quiz data
                       quizProvider.resetQuiz();
                       quizProvider.setUserName(userName);
 
