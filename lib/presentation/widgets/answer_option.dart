@@ -37,8 +37,8 @@ class AnswerOption extends StatelessWidget {
       if (isCorrect || isWrong) return Colors.white;
       if (isDisabled) {
         return isDarkMode
-            ? const Color(0xFFE8ECF5).withOpacity(0.4)
-            : const Color(0xFF1A1B4B).withOpacity(0.4);
+            ? const Color(0xFFE8ECF5).withValues(alpha: 0.4)
+            : const Color(0xFF1A1B4B).withValues(alpha: 0.4);
       }
       return isDarkMode ? const Color(0xFFE8ECF5) : const Color(0xFF1A1B4B);
     }
@@ -49,11 +49,11 @@ class AnswerOption extends StatelessWidget {
       if (isDisabled) {
         return isDarkMode
             ? const Color(0xFF1A1B3D)
-            : const Color(0xFF1A1B4B).withOpacity(0.1);
+            : const Color(0xFF1A1B4B).withValues(alpha: 0.1);
       }
       return isDarkMode
           ? const Color(0xFF1A1B3D)
-          : const Color(0xFF1A1B4B).withOpacity(0.1);
+          : const Color(0xFF1A1B4B).withValues(alpha: 0.1);
     }
 
     return GestureDetector(

@@ -12,10 +12,9 @@ class AppTheme {
       primary: AppColors.lightPrimaryButton,
       secondary: AppColors.lightSecondaryButton,
       surface: AppColors.lightCards,
-      background: AppColors.lightBackground,
     ),
   );
-  
+
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
@@ -25,7 +24,6 @@ class AppTheme {
       primary: AppColors.darkPrimaryButton,
       secondary: AppColors.darkSecondaryButton,
       surface: AppColors.darkCards,
-      background: AppColors.darkBackground,
     ),
   );
 }

@@ -19,13 +19,14 @@ class ResultScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final quizProvider = Provider.of<QuizProvider>(context, listen: false);
     final size = MediaQuery.of(context).size;
+    final isLandscape = size.width > size.height;
 
     // Capture values to prevent issues during navigation
     final score = quizProvider.score;
     final totalQuestions = quizProvider.totalQuestions;
     final userName = quizProvider.userName;
     final totalTime = quizProvider.totalTime;
-    
+
     final scorePercentage = totalQuestions > 0
         ? (score / totalQuestions * 100).round()
         : 0;
@@ -41,21 +42,26 @@ class ResultScreen extends StatelessWidget {
             : const Color(0xFFFFFFFF),
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(size.width * 0.05),
+            padding: EdgeInsets.symmetric(
+              horizontal: size.width * 0.05,
+              vertical: isLandscape ? size.height * 0.02 : size.width * 0.05,
+            ),
             child: Column(
               children: [
-                SizedBox(height: size.height * 0.03),
+                SizedBox(
+                  height: isLandscape ? size.height * 0.02 : size.height * 0.03,
+                ),
 
                 // Congratulations Image
                 Image.asset(
                   'assets/images/congratulations.png',
-                  width: size.width * 0.5,
-                  height: size.width * 0.5,
+                  width: isLandscape ? size.height * 0.3 : size.width * 0.5,
+                  height: isLandscape ? size.height * 0.3 : size.width * 0.5,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
                     return Icon(
                       Icons.emoji_events,
-                      size: size.width * 0.3,
+                      size: isLandscape ? size.height * 0.2 : size.width * 0.3,
                       color: themeProvider.isDarkMode
                           ? const Color(0xFFFF7BA8)
                           : const Color(0xFFFF6B9D),
@@ -63,7 +69,11 @@ class ResultScreen extends StatelessWidget {
                   },
                 ),
 
-                SizedBox(height: size.height * 0.02),
+                SizedBox(
+                  height: isLandscape
+                      ? size.height * 0.015
+                      : size.height * 0.02,
+                ),
 
                 // Title
                 Text(
@@ -71,7 +81,9 @@ class ResultScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: size.width * 0.08,
+                    fontSize: isLandscape
+                        ? size.height * 0.06
+                        : size.width * 0.08,
                     fontWeight: FontWeight.w800,
                     color: themeProvider.isDarkMode
                         ? const Color(0xFFE8ECF5)
@@ -79,7 +91,9 @@ class ResultScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: size.height * 0.01),
+                SizedBox(
+                  height: isLandscape ? size.height * 0.01 : size.height * 0.01,
+                ),
 
                 // User name - Enhanced display
                 RichText(
@@ -87,11 +101,13 @@ class ResultScreen extends StatelessWidget {
                   text: TextSpan(
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: size.width * 0.045,
+                      fontSize: isLandscape
+                          ? size.height * 0.04
+                          : size.width * 0.045,
                       fontWeight: FontWeight.w400,
                       color: themeProvider.isDarkMode
-                          ? const Color(0xFFE8ECF5).withOpacity(0.7)
-                          : const Color(0xFF1A1B4B).withOpacity(0.7),
+                          ? const Color(0xFFE8ECF5).withValues(alpha: 0.7)
+                          : const Color(0xFF1A1B4B).withValues(alpha: 0.7),
                     ),
                     children: [
                       const TextSpan(text: 'Great job, '),
@@ -109,12 +125,16 @@ class ResultScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: size.height * 0.04),
+                SizedBox(
+                  height: isLandscape ? size.height * 0.02 : size.height * 0.04,
+                ),
 
                 // Score Card
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(size.width * 0.06),
+                  padding: EdgeInsets.all(
+                    isLandscape ? size.height * 0.04 : size.width * 0.06,
+                  ),
                   decoration: BoxDecoration(
                     color: themeProvider.isDarkMode
                         ? const Color(0xFF1A1B3D)
@@ -123,7 +143,7 @@ class ResultScreen extends StatelessWidget {
                     border: Border.all(
                       color: themeProvider.isDarkMode
                           ? const Color(0xFF1A1B3D)
-                          : const Color(0xFF1A1B4B).withOpacity(0.1),
+                          : const Color(0xFF1A1B4B).withValues(alpha: 0.1),
                       width: 1,
                     ),
                   ),
@@ -134,7 +154,9 @@ class ResultScreen extends StatelessWidget {
                         'Your Score',
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: size.width * 0.05,
+                          fontSize: isLandscape
+                              ? size.height * 0.05
+                              : size.width * 0.05,
                           fontWeight: FontWeight.w700,
                           color: themeProvider.isDarkMode
                               ? const Color(0xFFE8ECF5)
@@ -142,14 +164,20 @@ class ResultScreen extends StatelessWidget {
                         ),
                       ),
 
-                      SizedBox(height: size.height * 0.02),
+                      SizedBox(
+                        height: isLandscape
+                            ? size.height * 0.015
+                            : size.height * 0.02,
+                      ),
 
                       // Score number
                       Text(
                         '$score/$totalQuestions',
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: size.width * 0.15,
+                          fontSize: isLandscape
+                              ? size.height * 0.12
+                              : size.width * 0.15,
                           fontWeight: FontWeight.w800,
                           color: themeProvider.isDarkMode
                               ? const Color(0xFFFF7BA8)
@@ -157,32 +185,46 @@ class ResultScreen extends StatelessWidget {
                         ),
                       ),
 
-                      SizedBox(height: size.height * 0.01),
+                      SizedBox(
+                        height: isLandscape
+                            ? size.height * 0.01
+                            : size.height * 0.01,
+                      ),
 
                       // Percentage
                       Text(
                         '$scorePercentage% Correct',
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: size.width * 0.045,
+                          fontSize: isLandscape
+                              ? size.height * 0.04
+                              : size.width * 0.045,
                           fontWeight: FontWeight.w600,
                           color: themeProvider.isDarkMode
-                              ? const Color(0xFFE8ECF5).withOpacity(0.7)
-                              : const Color(0xFF1A1B4B).withOpacity(0.7),
+                              ? const Color(0xFFE8ECF5).withValues(alpha: 0.7)
+                              : const Color(0xFF1A1B4B).withValues(alpha: 0.7),
                         ),
                       ),
 
-                      SizedBox(height: size.height * 0.03),
+                      SizedBox(
+                        height: isLandscape
+                            ? size.height * 0.02
+                            : size.height * 0.03,
+                      ),
 
                       // Divider
                       Divider(
                         color: themeProvider.isDarkMode
-                            ? const Color(0xFFE8ECF5).withOpacity(0.1)
-                            : const Color(0xFF1A1B4B).withOpacity(0.1),
+                            ? const Color(0xFFE8ECF5).withValues(alpha: 0.1)
+                            : const Color(0xFF1A1B4B).withValues(alpha: 0.1),
                         thickness: 1,
                       ),
 
-                      SizedBox(height: size.height * 0.02),
+                      SizedBox(
+                        height: isLandscape
+                            ? size.height * 0.015
+                            : size.height * 0.02,
+                      ),
 
                       // Time taken
                       Row(
@@ -193,14 +235,18 @@ class ResultScreen extends StatelessWidget {
                             color: themeProvider.isDarkMode
                                 ? const Color(0xFFFFBD6E)
                                 : const Color(0xFFFFB366),
-                            size: size.width * 0.06,
+                            size: isLandscape
+                                ? size.height * 0.05
+                                : size.width * 0.06,
                           ),
                           SizedBox(width: size.width * 0.02),
                           Text(
                             'Time: ${_formatTime(totalTime)}',
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: size.width * 0.045,
+                              fontSize: isLandscape
+                                  ? size.height * 0.04
+                                  : size.width * 0.045,
                               fontWeight: FontWeight.w600,
                               color: themeProvider.isDarkMode
                                   ? const Color(0xFFE8ECF5)
@@ -213,12 +259,14 @@ class ResultScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: size.height * 0.04),
+                SizedBox(
+                  height: isLandscape ? size.height * 0.02 : size.height * 0.04,
+                ),
 
                 // Try Again Button
                 SizedBox(
                   width: double.infinity,
-                  height: size.height * 0.06,
+                  height: isLandscape ? size.height * 0.08 : size.height * 0.06,
                   child: ElevatedButton(
                     onPressed: () {
                       // Reset and start new quiz
@@ -243,7 +291,9 @@ class ResultScreen extends StatelessWidget {
                       'Try Again',
                       style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: size.width * 0.045,
+                        fontSize: isLandscape
+                            ? size.height * 0.04
+                            : size.width * 0.045,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
@@ -251,18 +301,22 @@ class ResultScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: size.height * 0.015),
+                SizedBox(
+                  height: isLandscape
+                      ? size.height * 0.015
+                      : size.height * 0.015,
+                ),
 
                 // Back to Home Button
                 SizedBox(
                   width: double.infinity,
-                  height: size.height * 0.06,
+                  height: isLandscape ? size.height * 0.08 : size.height * 0.06,
                   child: OutlinedButton(
                     onPressed: () {
                       // Don't reset the user name, only reset quiz data
                       quizProvider.resetQuiz();
                       quizProvider.setUserName(userName);
-                      
+
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                           builder: (context) => const HomeScreen(),
@@ -273,8 +327,8 @@ class ResultScreen extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
                         color: themeProvider.isDarkMode
-                            ? const Color(0xFFE8ECF5).withOpacity(0.3)
-                            : const Color(0xFF1A1B4B).withOpacity(0.3),
+                            ? const Color(0xFFE8ECF5).withValues(alpha: 0.3)
+                            : const Color(0xFF1A1B4B).withValues(alpha: 0.3),
                         width: 2,
                       ),
                       shape: RoundedRectangleBorder(
@@ -285,7 +339,9 @@ class ResultScreen extends StatelessWidget {
                       'Back to Home',
                       style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: size.width * 0.045,
+                        fontSize: isLandscape
+                            ? size.height * 0.04
+                            : size.width * 0.045,
                         fontWeight: FontWeight.w700,
                         color: themeProvider.isDarkMode
                             ? const Color(0xFFE8ECF5)

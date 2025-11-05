@@ -6,9 +6,9 @@ class QuizProvider extends ChangeNotifier {
   String _userName = '';
   int _currentQuestionIndex = 0;
   int _score = 0;
-  int _totalTime = 0; // in seconds
+  int _totalTime = 0;
   List<Question> _selectedQuestions = [];
-  Map<int, int> _userAnswers = {}; // questionIndex: selectedAnswerIndex
+  Map<int, int> _userAnswers = {};
   bool _isQuizActive = false;
 
   // Getters

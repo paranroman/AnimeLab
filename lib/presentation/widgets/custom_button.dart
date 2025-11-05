@@ -5,6 +5,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isEnabled;
   final bool isDarkMode;
+  final bool isLandscape;
 
   const CustomButton({
     super.key,
@@ -12,6 +13,7 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     this.isEnabled = true,
     this.isDarkMode = false,
+    this.isLandscape = false,
   });
 
   @override
@@ -19,8 +21,8 @@ class CustomButton extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return SizedBox(
-      width: size.width * 0.4,
-      height: size.height * 0.06,
+      width: double.infinity,
+      height: isLandscape ? size.height * 0.09 : size.height * 0.06,
       child: ElevatedButton(
         onPressed: isEnabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
@@ -37,7 +39,7 @@ class CustomButton extends StatelessWidget {
           text,
           style: TextStyle(
             fontFamily: 'Poppins',
-            fontSize: size.width * 0.045,
+            fontSize: isLandscape ? size.height * 0.04 : size.width * 0.04,
             fontWeight: FontWeight.w700,
             color: isEnabled ? Colors.white : const Color(0xFFA8B2D1),
           ),
