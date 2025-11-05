@@ -67,10 +67,7 @@ class AnswerOption extends StatelessWidget {
         decoration: BoxDecoration(
           color: getBackgroundColor(),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: getBorderColor(),
-            width: 1.5,
-          ),
+          border: Border.all(color: getBorderColor(), width: 1.5),
         ),
         child: Text(
           text,

@@ -5,6 +5,7 @@ import '../../core/providers/theme_provider.dart';
 import '../../core/providers/quiz_provider.dart';
 import '../widgets/timer_widget.dart';
 import '../widgets/answer_option.dart';
+import 'result_screen.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -18,10 +19,25 @@ class _QuizScreenState extends State<QuizScreen> {
   bool _hasAnswered = false;
   bool _isTimerActive = true;
   Timer? _delayTimer;
+  Timer? _timeTracker;
+  int _elapsedSeconds = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimeTracking();
+  }
+
+  void _startTimeTracking() {
+    _timeTracker = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _elapsedSeconds++;
+    });
+  }
 
   @override
   void dispose() {
     _delayTimer?.cancel();
+    _timeTracker?.cancel();
     super.dispose();
   }
 
@@ -66,24 +82,13 @@ class _QuizScreenState extends State<QuizScreen> {
         _isTimerActive = true;
       });
     } else {
-      // Quiz completed - navigate to result screen
-      // TODO: Navigate to result screen in next step
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Quiz completed! Score: ${quizProvider.score}/${quizProvider.totalQuestions}',
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          backgroundColor: const Color(0xFF4CAF50),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
+      // Quiz completed - save total time and navigate to result screen
+      _timeTracker?.cancel();
+      quizProvider.addTime(_elapsedSeconds);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ResultScreen()),
       );
     }
   }
@@ -152,9 +157,7 @@ class _QuizScreenState extends State<QuizScreen> {
         backgroundColor: themeProvider.isDarkMode
             ? const Color(0xFF0F1020)
             : const Color(0xFFFFFFFF),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -205,6 +208,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
                     // Timer
                     TimerWidget(
+                      key: ValueKey(quizProvider.currentQuestionIndex),
                       duration: 30,
                       isActive: _isTimerActive,
                       onTimerEnd: () => _handleTimerEnd(quizProvider),
@@ -221,32 +225,48 @@ class _QuizScreenState extends State<QuizScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Question image
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.asset(
-                          currentQuestion.imageAsset,
-                          width: double.infinity,
-                          height: size.height * 0.3,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: double.infinity,
-                              height: size.height * 0.3,
-                              decoration: BoxDecoration(
-                                color: themeProvider.isDarkMode
-                                    ? const Color(0xFF1A1B3D)
-                                    : const Color(0xFFF8F9FF),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Icon(
-                                Icons.image_not_supported,
-                                size: size.width * 0.15,
-                                color: themeProvider.isDarkMode
-                                    ? const Color(0xFFE8ECF5).withOpacity(0.3)
-                                    : const Color(0xFF1A1B4B).withOpacity(0.3),
-                              ),
-                            );
-                          },
+                      Container(
+                        width: double.infinity,
+                        height: size.height * 0.25,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            currentQuestion.imageAsset,
+                            width: double.infinity,
+                            height: size.height * 0.25,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: double.infinity,
+                                height: size.height * 0.25,
+                                decoration: BoxDecoration(
+                                  color: themeProvider.isDarkMode
+                                      ? const Color(0xFF1A1B3D)
+                                      : const Color(0xFFF8F9FF),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  size: size.width * 0.15,
+                                  color: themeProvider.isDarkMode
+                                      ? const Color(0xFFE8ECF5).withOpacity(0.3)
+                                      : const Color(
+                                          0xFF1A1B4B,
+                                        ).withOpacity(0.3),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
 
@@ -268,30 +288,29 @@ class _QuizScreenState extends State<QuizScreen> {
                       SizedBox(height: size.height * 0.025),
 
                       // Answer options
-                      ...List.generate(
-                        currentQuestion.options.length,
-                        (index) {
-                          final isCorrectAnswer =
-                              index == currentQuestion.correctAnswerIndex;
-                          final isSelectedByUser = index == _selectedAnswerIndex;
-                          final isWrongAnswer =
-                              _hasAnswered && isSelectedByUser && !isCorrectAnswer;
-                          final shouldShowCorrect =
-                              _hasAnswered && isCorrectAnswer;
+                      ...List.generate(currentQuestion.options.length, (index) {
+                        final isCorrectAnswer =
+                            index == currentQuestion.correctAnswerIndex;
+                        final isSelectedByUser = index == _selectedAnswerIndex;
+                        final isWrongAnswer =
+                            _hasAnswered &&
+                            isSelectedByUser &&
+                            !isCorrectAnswer;
+                        final shouldShowCorrect =
+                            _hasAnswered && isCorrectAnswer;
 
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: size.height * 0.015),
-                            child: AnswerOption(
-                              text: currentQuestion.options[index],
-                              onTap: () => _handleAnswer(index, quizProvider),
-                              isCorrect: shouldShowCorrect,
-                              isWrong: isWrongAnswer,
-                              isDisabled: _hasAnswered,
-                              isDarkMode: themeProvider.isDarkMode,
-                            ),
-                          );
-                        },
-                      ),
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: size.height * 0.015),
+                          child: AnswerOption(
+                            text: currentQuestion.options[index],
+                            onTap: () => _handleAnswer(index, quizProvider),
+                            isCorrect: shouldShowCorrect,
+                            isWrong: isWrongAnswer,
+                            isDisabled: _hasAnswered,
+                            isDarkMode: themeProvider.isDarkMode,
+                          ),
+                        );
+                      }),
                     ],
                   ),
                 ),

@@ -95,8 +95,10 @@ class InstructionScreen extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     // Initialize quiz and navigate to quiz screen
-                    final quizProvider =
-                        Provider.of<QuizProvider>(context, listen: false);
+                    final quizProvider = Provider.of<QuizProvider>(
+                      context,
+                      listen: false,
+                    );
                     quizProvider.initializeQuiz(questionCount: 5);
 
                     Navigator.push(

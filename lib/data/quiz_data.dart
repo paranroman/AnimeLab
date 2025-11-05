@@ -217,7 +217,7 @@ class QuizData {
         'Kamehameha', 
         'Domain Expansion',
       ],
-      correctAnswerIndex: 1,
+      correctAnswerIndex: 3,
     ),
     Question(
       id: 19,
